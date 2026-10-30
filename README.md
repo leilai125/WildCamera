@@ -99,6 +99,27 @@ python demo/demo_dollyzoom.py
 python demo/demo_restoration.py
 ```
 
+For per-image calibration across multiple scenes, use the batch demo:
+```bash
+python demo/demo_inference_scenes.py /data/lei/vo_benchmarks/euroc/undistorted
+```
+It reads `<dataset_root>/sequences/<scene>/image_2/` and writes one file per scene
+to `<dataset_root>/wildcam_K/<scene>.txt`. Scenes and images are processed in
+filename order. Grayscale frames are converted to RGB; scene-root masks are
+excluded. The model, checkpoint loading, and `wtassumption=False` inference
+match the unchanged original demo. CUDA and the same dependencies are required.
+
+Each TXT has one tab-separated row per image, with columns `fx fy cx cy` and no header:
+```text
+450.000000000 452.000000000 376.000000000 240.000000000
+```
+The example values are illustrative. The four values are focal lengths and
+principal-point coordinates in the input image's pixels. Data rows correspond
+to images in sorted filename order in each scene's `image_2/` directory; no
+filenames are stored. Each row is an independent image estimate. Existing scene
+TXT files must be removed before rerunning. A scene file is saved only after
+all its images have been processed successfully.
+
 ## Usage
 1. Use torch.hub to load the model (in-the-wild experiment checkpoint):
 ``` bash
